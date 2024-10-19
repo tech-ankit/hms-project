@@ -2,6 +2,7 @@ package com.hsm.service;
 
 import com.hsm.entity.AppUser;
 import com.hsm.payload.AppUserDto;
+import com.hsm.payload.LoginDto;
 import com.hsm.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,7 @@ public class UserService {
 
     private AppUserRepository appUserRepository;
     private ModelMapper mapper;
+    private JwtService jwtService;
 
 
     public ResponseEntity<?> createAccount(AppUserDto appUser) {
@@ -43,12 +45,17 @@ public class UserService {
         return mapper.map(appUser , AppUser.class);
     }
 
-    public ResponseEntity<String> loginUser(String username, String password) {
-        Optional<AppUser> opUser = appUserRepository.findByUsernameAndPassword(username , BCrypt.hashpw(password,BCrypt.gensalt(4)));
-        System.out.println(BCrypt.hashpw(password,BCrypt.gensalt(4)));
+    public String verifyLogin(LoginDto loginDto) {
+        Optional<AppUser> opUser = appUserRepository.findByUsername(loginDto.getUsername());
         if (opUser.isPresent()){
-            return new ResponseEntity<>("Congratulation" , HttpStatus.OK);
+            AppUser user = opUser.get();
+            if(BCrypt.checkpw(loginDto.getPassword(), user.getPassword())){
+                String token = jwtService.generateToken(loginDto.getUsername());
+                return token;
+            }
+            return null;
+        }else {
+            return null;
         }
-        return new ResponseEntity<>("User Not Exists" , HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

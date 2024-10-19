@@ -1,9 +1,16 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/hsm
+    url: jdbc:mysql://localhost:3306/hms
     username: root
-    password: test
+    password: S@NKITA123
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+jwt:
+  algorithm:
+    key: akdhauidyasballeyasbdchuasfhbvkjsadsajchsadhjcsd
+  issuer: Ankit
+  expiry:
+    duration: 86400000
